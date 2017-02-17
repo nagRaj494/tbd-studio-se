@@ -1,0 +1,42 @@
+<%@ jet %>
+    <% 
+    boolean useExistConn = ElementParameterParser.getBooleanValue(node, "__USE_EXISTING_CONNECTION__");
+    String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+    if(useExistConn){
+    %>
+        com.datastax.driver.core.Cluster cluster_<%=cid%> = (com.datastax.driver.core.Cluster)globalMap.get("cluster_<%=connection%>");
+        com.datastax.driver.core.Session connection_<%=cid%> = (com.datastax.driver.core.Session)globalMap.get("connection_<%=connection%>");
+    <%
+    }else{  
+    %>
+        <%@ include file="@{org.talend.designer.components.bigdata}/components/tCassandraConnection/tCassandraConnection_datastax_connect.javajet"%>
+        resourceMap.put("cluster_<%=cid%>", cluster_<%=cid%>);
+        resourceMap.put("connection_<%=cid%>", connection_<%=cid%>);
+    <%
+    }
+    Boolean dieOnError = ElementParameterParser.getBooleanValue(node, "__DIE_ON_ERROR__");
+    String query = ElementParameterParser.getValue(node, "__QUERY__").replaceAll("[\r\n]", " ");
+    %>
+    try{
+    	connection_<%=cid%>.execute(<%=query%>);
+    }catch(java.lang.Exception e){
+    	<%
+    	if(dieOnError){
+    	%>
+    		throw(e);
+    	<%
+    	}else{
+    	%>
+    		System.err.println(e.getMessage());
+    	<%
+    	}
+    	%>
+    }
+    <% 
+    if(!useExistConn){
+    %>
+        connection_<%=cid%>.close();
+        cluster_<%=cid%>.close();
+    <%
+    }
+    %>

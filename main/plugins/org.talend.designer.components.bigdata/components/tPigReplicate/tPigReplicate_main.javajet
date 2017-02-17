@@ -1,0 +1,79 @@
+<%@ jet
+imports="
+    org.talend.core.model.metadata.IMetadataTable
+    org.talend.core.model.process.EConnectionType
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.INode
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    java.util.List
+    org.talend.core.model.process.ElementParameterParser
+"
+%>
+
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();	
+    String cid = node.getUniqueName();
+%>
+	<%@ include file="@{org.talend.designer.components.bigdata}/components/templates/Pig/PigHeader.javajet"%>	
+<%
+	List<IMetadataTable> metadatas = node.getMetadataList();
+	if ((metadatas != null) && (metadatas.size() > 0)) {//a
+		IMetadataTable metadata = metadatas.get(0);
+    	if (metadata != null) {//b	
+			String previous_node = "";
+			String start_node = "";
+        
+			boolean inMain = true;
+			boolean isExecutedThroughWebHCat = false;
+        
+			String previousOutputConnectionName = "";
+		
+      	List<? extends IConnection> inputConns = node.getIncomingConnections(EConnectionType.FLOW_MAIN);
+      	if ((inputConns!=null)&&(inputConns.size()>0)) {
+      		IConnection incomingConn = inputConns.get(0); 
+      		previous_node = incomingConn.getSource().getUniqueName();
+			INode loadNode = node.getDesignSubjobStartNode();
+
+			boolean isLocal = "true".equals(ElementParameterParser.getValue(loadNode, "__LOCAL__"));
+
+            if(!isLocal) {
+                String loadDistribution = ElementParameterParser.getValue(loadNode, "__DISTRIBUTION__");
+                String loadPigVersion = ElementParameterParser.getValue(loadNode, "__PIG_VERSION__");
+                org.talend.hadoop.distribution.component.PigComponent pigDistrib = null;
+                try {
+                    pigDistrib = (org.talend.hadoop.distribution.component.PigComponent) org.talend.hadoop.distribution.DistributionFactory.buildDistribution(loadDistribution, loadPigVersion);
+                } catch (java.lang.Exception e) {
+                    e.printStackTrace();
+                    return "";
+                }
+    
+                boolean isCustom = pigDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;
+                isExecutedThroughWebHCat = !isCustom && pigDistrib != null && pigDistrib.isExecutedThroughWebHCat();
+            }
+  			
+      		start_node = loadNode.getUniqueName();
+      		inMain = loadNode.isSubtreeStart();
+      		
+      		previousOutputConnectionName = incomingConn.getName();
+      	}else{
+      		return "";
+      	}
+%>
+		routines.system.PigHelper helper_<%=cid%> = new routines.system.PigHelper();
+<%
+    	List< ? extends IConnection> outConns = node.getOutgoingConnections();
+    	for (IConnection conn : outConns) {	
+    		if(conn.getLineStyle().equals(EConnectionType.FLOW_MAIN)||conn.getLineStyle().equals(EConnectionType.FLOW_MERGE)){
+%>
+           helper_<%=cid%>.add("query","<%=cid%>_<%=conn.getName()%>_RESULT = FOREACH <%=previous_node%>_<%=previousOutputConnectionName%>_RESULT GENERATE *;");
+<%		
+    		}
+    	}
+%>
+		<%@ include file="@{org.talend.designer.components.bigdata}/components/templates/Pig/RegisterPigLatin.javajet"%>
+<%
+  	}//b
+ }//a	
+%>
+

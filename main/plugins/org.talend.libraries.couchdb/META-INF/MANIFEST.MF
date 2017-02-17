@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Couchdb
+Bundle-SymbolicName: org.talend.libraries.couchdb
+Bundle-Version: 6.4.0.qualifier
+Bundle-ActivationPolicy: lazy
+Eclipse-BundleShape: dir

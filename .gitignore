@@ -1,0 +1,7 @@
+*.class
+bin/
+target/
+class/
+classes/
+.settings/
+
