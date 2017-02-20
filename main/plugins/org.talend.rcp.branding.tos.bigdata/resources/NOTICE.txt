@@ -1,5 +1,5 @@
-Talend Open Studio for Big Data
-Copyright (c) 2011 - 2017 Talend Inc. - www.talend.com
+Cogniphi Studio for Big Data
+Copyright (c) 2011 - 2017 Cogniphi- www.cogniphi.com
 All rights reserved.
  
 This program and the accompanying materials are made available
@@ -7,7 +7,7 @@ under the terms of the Talend Commercial Software License and
 Services Agreement which accompanies this distribution.
  
 This product includes software developed at
-Talend Inc. (http://www.talend.com).
+Cogniphi(www.cogniphi.com).
  
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org).
@@ -305,7 +305,7 @@ Licensed under Apache-2.0
 This product includes software developed at 
 Hadoop Libraries.
 Licensed under Apache-2.0
-Talend
+Cogniphi
 
 This product includes software developed at 
 Hadoop Libraries (Retrieved from CDH3u0. LICENSE.txt explains that Zookeeper is distributed under Apache License 2.0).
@@ -716,9 +716,9 @@ Licensed under Apache-2.0
 Copyright 2010 the original author or authors.
 
 This product includes software developed at 
-Zookeeper (modified by Talend).
+Zookeeper (modified by Cogniphi).
 Licensed under Apache-2.0
-Copyright 2016 Talend S.A
+Copyright 2016 Cogniphi
 
 This product includes software developed at 
 Zookeeper Client (https://github.com/sgroschupf/zkclient).
